@@ -1,0 +1,42 @@
+<?php
+
+namespace App\Services;
+
+use Midtrans\Config;
+use Midtrans\Snap;
+
+class MidtransService
+{
+    public function __construct()
+    {
+        Config::$serverKey = config('services.midtrans.server_key');
+        Config::$isProduction = config('services.midtrans.is_production');
+        Config::$isSanitized = true;
+        Config::$is3ds = true;
+    }
+
+    public function createTransaction($order)
+    {
+        $params = [
+            'transaction_details' => [
+                'order_id' => $order->order_number,
+                'gross_amount' => (int) $order->total_amount,
+            ],
+            'customer_details' => [
+                'first_name' => $order->customer_name,
+                'email' => $order->customer_email,
+                'phone' => $order->customer_phone,
+            ],
+            'item_details' => $order->items->map(function($item) {
+                return [
+                    'id' => $item->product_id,
+                    'price' => (int) $item->price,
+                    'quantity' => $item->quantity,
+                    'name' => $item->product_name,
+                ];
+            })->toArray(),
+        ];
+
+        return Snap::createTransaction($params);
+    }
+}
