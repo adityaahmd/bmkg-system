@@ -8,6 +8,7 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\PricingController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Admin;
+use App\Http\Controllers\MailController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,15 +30,12 @@ Route::get('/pricing', [PricingController::class, 'index'])->name('pricing.index
 */
 Route::middleware('auth')->group(function () {
     
-    // --- Bagian Cart (Disesuaikan dengan JavaScript fetch) ---
+    // --- Bagian Cart ---
     Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
-    // Diubah menjadi POST /cart agar sesuai dengan JavaScript fetch('{{ route("cart.store") }}')
     Route::post('/cart', [CartController::class, 'store'])->name('cart.store'); 
     Route::patch('/cart/{cart}', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/cart/{cart}', [CartController::class, 'remove'])->name('cart.remove');
     Route::delete('/cart-clear', [CartController::class, 'clear'])->name('cart.clear');
-    
-    // API untuk Update Badge di Navbar
     Route::get('/api/cart/count', [CartController::class, 'getCount']);
 
     // --- Checkout ---
@@ -46,16 +44,24 @@ Route::middleware('auth')->group(function () {
     Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])->name('checkout.success');
 
     // --- DASHBOARD MEMBER ---
-    Route::prefix('dashboard')->name('dashboard')->group(function () {
-        Route::get('/', [DashboardController::class, 'index'])->name('.index'); 
-        Route::get('/orders', [DashboardController::class, 'orders'])->name('.orders');
-        Route::get('/downloads', [DashboardController::class, 'downloads'])->name('.downloads');
-        Route::get('/profile', [DashboardController::class, 'profile'])->name('.profile');
-        Route::put('/profile', [DashboardController::class, 'updateProfile'])->name('.update');
+    // Gunakan 'dashboard.' (dengan titik) agar sub-route menjadi dashboard.index, dashboard.profile, dll.
+// --- DASHBOARD MEMBER ---
+    Route::prefix('dashboard')->name('dashboard.')->group(function () {
+        Route::get('/', [DashboardController::class, 'index'])->name('index'); 
+        Route::get('/orders', [DashboardController::class, 'orders'])->name('orders');
+        
+        // --- TAMBAHKAN BARIS INI (Penting untuk mengatasi error tadi) ---
+        Route::get('/orders/{order}', [DashboardController::class, 'showOrder'])->name('orders.show');
+        
+        Route::get('/downloads', [DashboardController::class, 'downloads'])->name('downloads');
+        // Route untuk proses download file asli
+        Route::get('/downloads/{orderItem}', [DashboardController::class, 'downloadFile'])->name('downloads.process');
+        
+        // Profile
+        Route::get('/profile', [DashboardController::class, 'profile'])->name('profile');
+        Route::put('/profile', [DashboardController::class, 'updateProfile'])->name('profile.update');
     });
     
-    // Fallback alias dashboard
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 });
 
 /*
@@ -83,5 +89,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/reports', [Admin\ReportController::class, 'index'])->name('reports.index');
     Route::get('/reports/export', [Admin\ReportController::class, 'export'])->name('reports.export');
 });
+
+Route::get('/send-email', [MailController::class, 'sendEmail']);
 
 require __DIR__.'/auth.php';

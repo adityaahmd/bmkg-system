@@ -53,7 +53,7 @@
                                 <p class="text-xs font-bold text-blue-900 truncate">{{ Auth::user()->email }}</p>
                             </div>
 
-                            <a href="{{ route('dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-900">Dashboard Utama</a>
+                            <a href="{{ route('dashboard.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-900">Dashboard Utama</a>
                             <a href="{{ route('dashboard.orders') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-900">Pesanan Saya</a>
                             <a href="{{ route('dashboard.profile') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-900">Profil Saya</a>
                             

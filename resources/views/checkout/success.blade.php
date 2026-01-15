@@ -1,6 +1,7 @@
+{{-- resources/views/checkout/success.blade.php --}}
 @extends('layouts.app')
 
-@section('title', 'Pesanan Berhasil - BMKG Data Service')
+@section('title', 'Pesanan Berhasil - BMKG')
 
 @section('content')
 <div class="container mx-auto px-4 py-12">

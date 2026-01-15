@@ -6,17 +6,14 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Cart;
+use App\Mail\OrderCreated; // Tambahkan ini
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail; // Tambahkan ini
 
 class CheckoutController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
-
     public function index()
     {
         $cartItems = $this->getCartItems();
@@ -87,12 +84,38 @@ class CheckoutController extends Controller
             Cart::where('user_id', Auth::id())->delete();
 
             DB::commit();
+            // Di method process(), setelah DB::commit()
 
-            // Send notification email
-            // Mail::to($order->customer_email)->send(new OrderCreated($order));
+DB::commit();
+
+// TAMBAHKAN LOG DEBUGGING
+\Log::info('=== CHECKOUT SUCCESS ===');
+\Log::info('Order ID: ' . $order->id);
+\Log::info('Order Number: ' . $order->order_number);
+\Log::info('Customer Email: ' . $order->customer_email);
+
+// KIRIM EMAIL NOTIFIKASI
+try {
+    \Log::info('Attempting to send email...');
+    Mail::to($order->customer_email)->send(new OrderCreated($order));
+    \Log::info('✅ Email sent successfully!');
+} catch (\Exception $e) {
+    \Log::error('❌ Failed to send email: ' . $e->getMessage());
+}
+
+return redirect()->route('checkout.success', $order)
+    ->with('success', 'Pesanan berhasil dibuat. Cek email Anda untuk detail pembayaran.');
+
+            // KIRIM EMAIL NOTIFIKASI
+            try {
+                Mail::to($order->customer_email)->send(new OrderCreated($order));
+            } catch (\Exception $e) {
+                // Log error tapi jangan stop proses
+                \Log::error('Failed to send order email: ' . $e->getMessage());
+            }
 
             return redirect()->route('checkout.success', $order)
-                ->with('success', 'Pesanan berhasil dibuat');
+                ->with('success', 'Pesanan berhasil dibuat. Cek email Anda untuk detail pembayaran.');
 
         } catch (\Exception $e) {
             DB::rollBack();

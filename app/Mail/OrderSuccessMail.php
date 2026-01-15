@@ -1,5 +1,4 @@
 <?php
-// app/Mail/OrderCreated.php
 
 namespace App\Mail;
 
@@ -10,43 +9,28 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class OrderCreated extends Mailable
+class OrderSuccessMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $order;
+    public function __construct(
+        public Order $order
+    ) {}
 
-    /**
-     * Create a new message instance.
-     */
-    public function __construct(Order $order)
-    {
-        $this->order = $order;
-    }
-
-    /**
-     * Get the message envelope.
-     */
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Pesanan Anda #' . $this->order->order_number,
+            subject: 'Pembayaran Diterima - Pesanan #' . $this->order->order_number,
         );
     }
 
-    /**
-     * Get the message content definition.
-     */
     public function content(): Content
     {
         return new Content(
-            view: 'emails.orders.created',
+            view: 'emails.order_success',
         );
     }
 
-    /**
-     * Get the attachments for the message.
-     */
     public function attachments(): array
     {
         return [];
