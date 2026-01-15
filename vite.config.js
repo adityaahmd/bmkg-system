@@ -12,7 +12,7 @@ export default defineConfig({
         host: '0.0.0.0',
         port: 5173,
         hmr: {
-            host: '192.168.1.24', // IP LAPTOP UTAMA
+            host: '192.168.1.28', // IP LAPTOP UTAMA
         },
     },
 });

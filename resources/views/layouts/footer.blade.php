@@ -214,13 +214,7 @@
 <script>
 // Initialize map when page loads
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize Leaflet map
-    const map = L.map('map').setView([3.313896945372281, 117.5813829078058], 15);
-    
-    // Add OpenStreetMap tiles
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
+   
     
     // Add custom marker icon
     const customIcon = L.divIcon({

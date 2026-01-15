@@ -39,7 +39,7 @@ class AuthenticatedSessionController extends Controller
         }
 
         // Jika user biasa, arahkan ke dashboard
-        return redirect()->intended(route('dashboard'));
+        return redirect()->intended(route('dashboard.index'));
     }
 
     /**

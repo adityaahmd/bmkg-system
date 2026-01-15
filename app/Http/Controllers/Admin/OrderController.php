@@ -48,11 +48,11 @@ class OrderController extends Controller implements HasMiddleware
         return view('admin.orders.index', compact('orders'));
     }
 
-    public function show(Order $order)
-    {
-        $order->load('user', 'items.product');
-        return view('admin.orders.show', compact('order'));
-    }
+   public function show(Order $order)
+{
+    // Pastikan ini 'admin.orders.show' (mengikuti struktur folder tadi)
+    return view('admin.orders.show', compact('order'));
+}
 
     public function updatePaymentStatus(Request $request, Order $order)
     {
